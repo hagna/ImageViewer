@@ -18,6 +18,7 @@ class ImageModel:
         self.index = 0
         self.dirIndex = 0
         self._setFiles()
+        self.clock = pygame.time.Clock()
 
     def _setFiles(self):
         self.files = [file for file in os.listdir(self.getCurrentDir()) if isImage(file)]
@@ -59,13 +60,15 @@ class ImageModel:
     def run(self):
         self.view = ImageView()
         self.view.viewImage(self.getCurrentDir(), self.getCurrentImage())
-
+        play = True
         while 1:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     return
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                    play = not play
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                     file = self.getPrevImage()
                     self.view.viewImage(self.getCurrentDir(), file)
@@ -77,6 +80,11 @@ class ImageModel:
                     self.view.viewImage(self.getCurrentDir(), file)
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
                     file = self.getNextDir()
+                    self.view.viewImage(self.getCurrentDir(), file)
+            if play:
+                time = self.clock.tick()
+                if time > 3000: #3 seconds
+                    file = self.getNextImage()
                     self.view.viewImage(self.getCurrentDir(), file)
 
 class ImageView:
