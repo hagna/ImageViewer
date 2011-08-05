@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os, pygame, filenav
+import pygame.locals
 
 images = ['jpg', 'jpeg', 'png', ]
 
@@ -63,7 +64,7 @@ class ImageView:
         pygame.init()
         pygame.mouse.set_visible(False)
         self.res = (width, height)
-        self.screen = pygame.display.set_mode(self.res)
+        self.screen = pygame.display.set_mode(self.res, pygame.locals.DOUBLEBUF)
         background = pygame.Surface(self.res)
         self.background = background.convert()
         self.background.fill( (0,0,0) )
