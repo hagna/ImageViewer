@@ -61,6 +61,7 @@ class ImageView:
 
     def __init__(self, width, height):
         pygame.init()
+        pygame.mouse.set_visible(False)
         self.res = (width, height)
         self.screen = pygame.display.set_mode(self.res)
         background = pygame.Surface(self.res)
