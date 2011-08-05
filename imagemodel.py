@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os, pygame
+import os, pygame, filenav
 
 images = ['jpg', 'jpeg', 'png', ]
 
@@ -13,53 +13,17 @@ def isImage(file):
 
 class ImageModel:
     
-    def __init__(self, dirs):
-        self.dirs = dirs
-        self.index = 0
-        self.dirIndex = 0
-        self._setFiles()
+    def __init__(self, startdir, width=None, height=None):
+        self.width = width
+        self.height = height
+        self.dirnav = filenav.FileNav(startdir)
+        self.imagenav = filenav.FileNav(startdir.children()[0])
         self.clock = pygame.time.Clock()
 
-    def _setFiles(self):
-        self.files = [file for file in os.listdir(self.getCurrentDir()) if isImage(file)]
-
-    def getCurrentDir(self):
-        return self.dirs[self.dirIndex]
-
-    def getCurrentImage(self):
-        return self.files[self.index]
-
-    def getNextImage(self):
-        self.index = self.index + 1
-        if self.index == len(self.files):
-            self.index = 0
-        return self.getCurrentImage()
-
-    def getPrevImage(self):
-        if self.index == 0:
-            self.index = len(self.files)
-        self.index = self.index - 1
-        return self.getCurrentImage()
-
-    def getNextDir(self):
-        self.dirIndex = self.dirIndex + 1
-        if self.dirIndex == len(self.dirs):
-            self.dirIndex = 0
-        self._setFiles()
-        self.index = 0
-        return self.getCurrentImage()
-
-    def getPrevDir(self):
-        if self.dirIndex == 0:
-            self.dirIndex = len(self.dirs)
-        self.dirIndex = self.dirIndex - 1
-        self._setFiles()
-        self.index = 0
-        return self.getCurrentImage()
 
     def run(self):
-        self.view = ImageView()
-        self.view.viewImage(self.getCurrentDir(), self.getCurrentImage())
+        self.view = ImageView(self.width, self.height)
+        self.view.viewImage(self.imagenav.current)
         play = True
         while 1:
             for event in pygame.event.get():
@@ -70,36 +34,37 @@ class ImageModel:
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                     play = not play
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
-                    file = self.getPrevImage()
-                    self.view.viewImage(self.getCurrentDir(), file)
+                    file = self.imagenav.previous
+                    self.view.viewImage(file)
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
-                    file = self.getNextImage()
-                    self.view.viewImage(self.getCurrentDir(), file)
+                    file = self.imagenav.next
+                    self.view.viewImage(file)
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
-                    file = self.getPrevDir()
-                    self.view.viewImage(self.getCurrentDir(), file)
+                    newdir = self.dirnav.previous
+                    file = newdir.children()[0]
+                    self.view.viewImage(file)
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
-                    file = self.getNextDir()
-                    self.view.viewImage(self.getCurrentDir(), file)
+                    newdir = self.dirnav.next
+                    file = newdir.children()[0]
+                    self.view.viewImage(file)
             if play:
                 time = self.clock.tick()
                 if time > 3000: #3 seconds
-                    file = self.getNextImage()
-                    self.view.viewImage(self.getCurrentDir(), file)
+                    file = self.imagenav.next
+                    self.view.viewImage(file)
 
 class ImageView:
 
-    def __init__(self):
+    def __init__(self, width, height):
         pygame.init()
-        info = pygame.display.Info()
-        self.res = (info.current_w, info.current_h)
+        self.res = (width, height)
         self.screen = pygame.display.set_mode(self.res)
         background = pygame.Surface(self.res)
         self.background = background.convert()
         self.background.fill( (0,0,0) )
 
-    def viewImage(self, dir, file):
-        fullpath = os.path.join(dir, file)
+    def viewImage(self, fp):
+        fullpath = fp.path
         try:
             image = pygame.image.load(fullpath)
         except pygame.error, message:
