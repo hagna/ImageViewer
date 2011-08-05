@@ -77,7 +77,6 @@ class ImageView:
             print 'Cannot load image %s' % file
             raise SystemExit, message
         self.screen.blit(self.background, (0,0) )
-        pygame.display.flip()
         pos = self._getPos(image)
         self.screen.blit(image, pos)
         pygame.display.flip()
