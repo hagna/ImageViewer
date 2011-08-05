@@ -25,6 +25,7 @@ class ImageModel:
         self.view = ImageView(self.width, self.height)
         self.view.viewImage(self.imagenav.current)
         play = True
+        time = self.clock.tick()
         while 1:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -50,8 +51,9 @@ class ImageModel:
                     self.imagenav.current = file
                     self.view.viewImage(file)
             if play:
-                time = self.clock.tick()
+                time = time + self.clock.tick()
                 if time > 3000: #3 seconds
+                    time = 0
                     file = self.imagenav.next
                     self.view.viewImage(file)
 
