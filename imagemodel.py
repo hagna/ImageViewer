@@ -42,10 +42,12 @@ class ImageModel:
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
                     newdir = self.dirnav.previous
                     file = newdir.children()[0]
+                    self.imagenav.current = file
                     self.view.viewImage(file)
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
                     newdir = self.dirnav.next
                     file = newdir.children()[0]
+                    self.imagenav.current = file
                     self.view.viewImage(file)
             if play:
                 time = self.clock.tick()
