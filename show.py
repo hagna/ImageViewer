@@ -14,6 +14,10 @@ class StartOptions(usage.Options):
             ('height', 'h', 768, 'Height of screen'),
             ]
 
+    optFlags = [
+        ('noexit', 'e', 'Do not allow exit via ESC'),
+        ]
+
     def parseArgs(self, location):
         self.location = FilePath(location).children()[0]
 
@@ -29,7 +33,8 @@ def parseOptions(argv):
 def main(argv):
     opt = parseOptions(argv)
     i = imagemodel.ImageModel(opt.location, 
-                              width=opt['width'], height=opt['height'])
+                              width=opt['width'], height=opt['height'],
+                              noexit=opt['noexit'])
     i.run()
 
 if __name__ == '__main__':
