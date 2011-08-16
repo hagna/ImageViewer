@@ -35,7 +35,7 @@ def main(argv):
     opt = parseOptions(argv)
     i = imagemodel.ImageModel(opt.location, 
                               width=opt['width'], height=opt['height'],
-                              noexit=opt['noexit'], switchkeys=opt['switch-keys'])
+                              noexit=opt['noexit'], switchKeys=opt['switch-keys'])
     i.run()
 
 if __name__ == '__main__':
