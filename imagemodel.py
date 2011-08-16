@@ -13,12 +13,21 @@ def isImage(file):
     return False
 
 class ImageModel:
-    
-    def __init__(self, startdir, width=None, height=None, noexit=True, switchKeys=False):
+
+    waittime = 30000
+
+    def __init__(self, startdir, width=None, height=None,
+                 noexit=True, switchKeys=False):
         self.width = width
         self.height = height
-        self.dirnav = filenav.FileNav(startdir)
-        self.imagenav = filenav.FileNav(startdir.children()[0])
+        print "startdir is", startdir
+        self.dirnav = filenav.FileNav(startdir, sortbyname=True)
+        self.momentum = self.right
+
+        newdir = self.dirnav.current
+        s = filenav.similarChild(None, newdir)
+        self.imagenav = s
+
         self.clock = pygame.time.Clock()
         self.noexit = noexit
         self.switchKeys = switchKeys
@@ -54,59 +63,62 @@ class ImageModel:
             self.time = self.time + self.clock.tick()
             if self.time > self.waittime:
                 self.time = 0
-                file = self.imagenav.next
-                self.view.viewImage(file)
+                self.momentum()
 
     def down(self):
         if self.switchKeys:
             self.nextDir()
         else:
             self.nextImage()
+        self.momentum = self.down
 
     def up(self):
         if self.switchKeys:
             self.prevDir()
         else:
             self.prevImage()
+        self.momentum = self.up
 
     def left(self):
         if self.switchKeys:
             self.prevImage()
         else:
             self.prevDir()
+        self.momentum = self.left
 
     def right(self):
         if self.switchKeys:
             self.nextImage()
         else:
             self.nextDir()
+        self.momentum = self.right
 
     def nextImage(self):
-        file = self.imagenav.next    
+        file = self.imagenav.next
         self.view.viewImage(file)
-   
+
     def prevImage(self):
-        file = self.imagenav.previous    
+        file = self.imagenav.previous
         self.view.viewImage(file)
+
 
     def prevDir(self):
         newdir = self.dirnav.previous
-        file = newdir.children()[0]
-        self.imagenav.current = file
-        self.view.viewImage(file)
+        self.imagenav = filenav.similarChild(self.imagenav, newdir)
+        self.view.viewImage(self.imagenav.current)
+
 
     def nextDir(self):
         newdir = self.dirnav.next
-        file = newdir.children()[0]
-        self.imagenav.current = file
-        self.view.viewImage(file)
+        self.imagenav = filenav.similarChild(self.imagenav, newdir)
+        self.view.viewImage(self.imagenav.current)
+
 
     def run(self):
         self.view = ImageView(self.width, self.height)
         self.view.viewImage(self.imagenav.current)
         self.play = True
         self.time = self.clock.tick()
-        self.waittime = 30000
         self.exit = False
         while 1:
             self.dispatch_events()
@@ -128,6 +140,7 @@ class ImageView:
         self.background.fill( (0,0,0) )
 
     def viewImage(self, fp):
+        print fp
         fullpath = fp.path
         try:
             image = pygame.image.load(fullpath)
@@ -149,4 +162,3 @@ class ImageView:
         if startY < 0:
             startY = 0
         return (startX, startY)
-

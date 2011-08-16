@@ -1,5 +1,10 @@
 from twisted.python.filepath import FilePath
 
+def similarChild(c, newdir):
+    s = sorted(newdir.children(), reverse=True, key=lambda a: a.getModificationTime())
+    return FileNav(s[0])
+
+
 class FileNav(object):
     """
     Provides a next, previous, current file interface.  Just
@@ -12,8 +17,9 @@ class FileNav(object):
     >>> a.current()
     """
 
-    def __init__(self, fp):
+    def __init__(self, fp, sortbyname=False):
         self._current = fp
+        self.sortbyname = sortbyname
 
     def setCurrent(self, current):
         if not isinstance(current, FilePath):
@@ -26,7 +32,11 @@ class FileNav(object):
     current = property(getCurrent, setCurrent)
 
     def _sortall(self):
-        return sorted(self.current.parent().children(), key=lambda a: a.getAccessTime())
+        if self.sortbyname:
+            res = sorted(self.current.parent().children(), key=lambda a: (a, a.getModificationTime()))
+        else:
+            res = sorted(self.current.parent().children(), key=lambda a: a.getModificationTime())
+        return res
 
     def getPrevious(self):
         all = self._sortall()
