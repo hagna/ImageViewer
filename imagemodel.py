@@ -40,24 +40,16 @@ class ImageModel:
                 play = not play
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                 self.time = 0
-                file = self.imagenav.previous
-                self.view.viewImage(file)
+                self.up()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
                 self.time = 0
-                file = self.imagenav.next
-                self.view.viewImage(file)
+                self.down()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
                 self.time = 0
-                newdir = self.dirnav.previous
-                file = newdir.children()[0]
-                self.imagenav.current = file
-                self.view.viewImage(file)
+                self.left()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
                 self.time = 0
-                newdir = self.dirnav.next
-                file = newdir.children()[0]
-                self.imagenav.current = file
-                self.view.viewImage(file)
+                self.right()
         if self.play:
             self.time = self.time + self.clock.tick()
             if self.time > self.waittime:
@@ -65,6 +57,25 @@ class ImageModel:
                 file = self.imagenav.next
                 self.view.viewImage(file)
 
+    def down(self):
+        file = self.imagenav.next    
+        self.view.viewImage(file)
+
+    def up(self):
+        file = self.imagenav.previous    
+        self.view.viewImage(file)
+
+    def left(self):
+        newdir = self.dirnav.previous
+        file = newdir.children()[0]
+        self.imagenav.current = file
+        self.view.viewImage(file)
+
+    def right(self):
+        newdir = self.dirnav.next
+        file = newdir.children()[0]
+        self.imagenav.current = file
+        self.view.viewImage(file)
 
     def run(self):
         self.view = ImageView(self.width, self.height)
@@ -80,8 +91,6 @@ class ImageModel:
             else:
                 if self.exit == True:
                     break
-
-
 
 class ImageView:
 
