@@ -14,14 +14,14 @@ def isImage(file):
 
 class ImageModel:
     
-    def __init__(self, startdir, width=None, height=None, noexit=True):
+    def __init__(self, startdir, width=None, height=None, noexit=True, switchKeys=False):
         self.width = width
         self.height = height
         self.dirnav = filenav.FileNav(startdir)
         self.imagenav = filenav.FileNav(startdir.children()[0])
         self.clock = pygame.time.Clock()
         self.noexit = noexit
-
+        self.switchKeys = switchKeys
 
     def dispatch_events(self):
         time = self.time
@@ -58,20 +58,44 @@ class ImageModel:
                 self.view.viewImage(file)
 
     def down(self):
-        file = self.imagenav.next    
-        self.view.viewImage(file)
+        if self.switchKeys:
+            self.nextDir()
+        else:
+            self.nextImage()
 
     def up(self):
+        if self.switchKeys:
+            self.prevDir()
+        else:
+            self.prevImage()
+
+    def left(self):
+        if self.switchKeys:
+            self.prevImage()
+        else:
+            self.prevDir()
+
+    def right(self):
+        if self.switchKeys:
+            self.nextImage()
+        else:
+            self.nextDir()
+
+    def nextImage(self):
+        file = self.imagenav.next    
+        self.view.viewImage(file)
+   
+    def prevImage(self):
         file = self.imagenav.previous    
         self.view.viewImage(file)
 
-    def left(self):
+    def prevDir(self):
         newdir = self.dirnav.previous
         file = newdir.children()[0]
         self.imagenav.current = file
         self.view.viewImage(file)
 
-    def right(self):
+    def nextDir(self):
         newdir = self.dirnav.next
         file = newdir.children()[0]
         self.imagenav.current = file

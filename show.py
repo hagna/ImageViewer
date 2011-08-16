@@ -16,6 +16,7 @@ class StartOptions(usage.Options):
 
     optFlags = [
         ('noexit', 'e', 'Do not allow exit via ESC'),
+        ('switch-keys', 'S', 'Switches the up/down keys to switch dirs'),
         ]
 
     def parseArgs(self, location):
@@ -34,7 +35,7 @@ def main(argv):
     opt = parseOptions(argv)
     i = imagemodel.ImageModel(opt.location, 
                               width=opt['width'], height=opt['height'],
-                              noexit=opt['noexit'])
+                              noexit=opt['noexit'], switchkeys=opt['switch-keys'])
     i.run()
 
 if __name__ == '__main__':
